@@ -1,14 +1,10 @@
 # MasterYAI
 
-AI content automation platform for discovering stories, generating social content, scheduling and publishing.
+MasterYAI is a full-stack AI content automation workspace: news discovery → AI copy/SEO → image generation → voice generation → official social publishing.
 
-## GitHub Pages
+## Deployment
 
-This repository is configured as a Next.js static export for the project URL:
-
-`https://sayyedshahzeb2009-eng.github.io/masteryai/`
-
-GitHub Pages should use **GitHub Actions** as the deployment source.
+**MasterYAI is now a full-stack Next.js app. GitHub Pages is not used for the backend. Deploy the repository to Vercel (or another Node-compatible host) so `/api/*` routes can execute.**
 
 ## Local development
 
@@ -19,11 +15,11 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-## API keys — important
+## Server environment variables
 
-Do **not** paste real API keys into the frontend code, GitHub repository, or any `NEXT_PUBLIC_*` variable.
+Copy `.env.example` to `.env.local` for local development. In production, add the same variables to your Vercel project under **Settings → Environment Variables**.
 
-For the eventual production automation backend, use server-side environment variables such as:
+Required for AI features:
 
 ```env
 ANTHROPIC_API_KEY=
@@ -31,14 +27,45 @@ GEMINI_API_KEY=
 ELEVENLABS_API_KEY=
 ```
 
-Social platforms should use official OAuth connections rather than asking users for their passwords.
+Optional provider configuration:
 
-### Providers planned
+```env
+ANTHROPIC_MODEL=claude-sonnet-4-6
+GEMINI_IMAGE_MODEL=gemini-3-pro-image
+ELEVENLABS_MODEL=eleven_multilingual_v2
+ELEVENLABS_VOICE_ID=JBFqnCBsd6RMkjVDRZzb
+```
 
-- Claude / Anthropic — scripts, captions, SEO and content decisions
-- Gemini Nano Banana Pro — image/poster generation (`gemini-3-pro-image`)
-- ElevenLabs — voice generation
-- Instagram / Meta — publishing through official APIs and OAuth
-- YouTube — publishing through the YouTube API and OAuth
+Social OAuth:
 
-The current GitHub Pages build is the frontend only. Real API calls and automated publishing require a server/backend deployment where secrets can remain private.
+```env
+INSTAGRAM_APP_ID=
+INSTAGRAM_APP_SECRET=
+INSTAGRAM_REDIRECT_URI=https://YOUR-DOMAIN/api/auth/instagram/callback
+YOUTUBE_CLIENT_ID=
+YOUTUBE_CLIENT_SECRET=
+YOUTUBE_REDIRECT_URI=https://YOUR-DOMAIN/api/auth/youtube/callback
+```
+
+Never put secrets in `NEXT_PUBLIC_*`, frontend source, or GitHub.
+
+## Implemented backend
+
+- `GET /api/health` — server and environment status
+- `POST /api/news/scan` — Google News RSS discovery for a configured topic
+- `POST /api/ai/content` — Claude content/SEO package generation
+- `POST /api/ai/image` — Gemini Nano Banana Pro image generation
+- `POST /api/ai/voice` — ElevenLabs text-to-speech
+- `/api/auth/instagram` + callback — Instagram OAuth start/callback
+- `/api/auth/youtube` + callback — YouTube OAuth start/callback
+- `POST /api/publish/instagram` — Instagram image publishing
+
+## Important publishing limitation
+
+Instagram image publishing requires the final image to be available at a public HTTPS URL. The current image endpoint returns generated image bytes to the browser, so a storage layer (Cloudinary, S3/R2, etc.) should be added before automatic publishing of generated images.
+
+Video rendering, persistent database storage, recurring jobs and multi-user billing are intentionally not faked as complete features yet; they are the next backend layers.
+
+## Security
+
+API keys are server-only. Social connections use OAuth rather than asking for platform passwords. Do not commit `.env` files or real credentials.
