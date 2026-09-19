@@ -1,5 +1,5 @@
 import { json } from '@/lib/server';
-
+import { dbQuery, hasDatabase } from '@/lib/db';
 function cookie(request:Request,name:string){return request.headers.get('cookie')?.split(';').map(x=>x.trim()).find(x=>x.startsWith(`${name}=`))?.slice(name.length+1)}
 export async function GET(request:Request){
  try{
@@ -9,6 +9,8 @@ export async function GET(request:Request){
   const tokenRes=await fetch('https://api.instagram.com/oauth/access_token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body}); const token=await tokenRes.json(); if(!tokenRes.ok) return json({error:token?.error_message||'Instagram token exchange failed'},502);
   const accessToken=token.access_token; const longRes=await fetch(`https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${encodeURIComponent(process.env.INSTAGRAM_APP_SECRET||'')}&access_token=${encodeURIComponent(accessToken)}`); const long=await longRes.json();
   const finalToken=long.access_token||accessToken; const profileRes=await fetch(`https://graph.instagram.com/me?fields=id,user_id,username&access_token=${encodeURIComponent(finalToken)}`); const profile=await profileRes.json();
+  const accountId=String(profile.user_id||profile.id||token.user_id||'');
+  if(hasDatabase() && accountId) await dbQuery(`insert into connected_accounts(provider,account_id,account_name,access_token,token_expires_at,metadata) values('instagram',$1,$2,$3,now()+interval '60 days',$4) on conflict(provider,account_id) do update set account_name=excluded.account_name,access_token=excluded.access_token,token_expires_at=excluded.token_expires_at,metadata=excluded.metadata,updated_at=now()`,[accountId,profile.username||'Instagram',finalToken,profile]);
   const response=new Response(`<script>window.close();location.href='/'</script>`,{status:200,headers:{'content-type':'text/html; charset=utf-8'}}); response.headers.append('Set-Cookie',`ig_access_token=${encodeURIComponent(finalToken)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=5184000${process.env.NODE_ENV==='production'?'; Secure':''}`); response.headers.append('Set-Cookie',`ig_profile=${encodeURIComponent(JSON.stringify(profile))}; Path=/; HttpOnly; SameSite=Lax; Max-Age=5184000${process.env.NODE_ENV==='production'?'; Secure':''}`); return response;
  }catch(e:any){return json({error:e?.message||'Instagram OAuth callback failed'},500)}
 }
