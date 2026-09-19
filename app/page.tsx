@@ -1,70 +1,67 @@
 'use client';
 
-import { useState } from 'react';
-import { Bell, Bot, CalendarDays, ChevronRight, CircleHelp, FileText, Image, Instagram, LayoutDashboard, Menu, Plus, Search, Settings, Sparkles, BarChart3, Video, WandSparkles, Youtube } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Bell, Bot, CalendarDays, ChevronRight, CircleHelp, FileText, Image as ImageIcon, Instagram, LayoutDashboard, Search, Settings, Sparkles, BarChart3, Video, WandSparkles, Youtube, Play, Pause, RefreshCw, CheckCircle2, X, Send, ExternalLink } from 'lucide-react';
 
-const news = [
-  { title: 'Bigg Boss house gets a new captain after intense task', source: 'Entertainment Desk', time: '8 min ago', tag: 'Trending' },
-  { title: 'New OTT series announces release date and first look', source: 'OTT Updates', time: '24 min ago', tag: 'Fresh' },
-  { title: 'Weekend episode brings a surprise twist for contestants', source: 'TV Buzz', time: '41 min ago', tag: 'Hot' },
-  { title: 'JioHotstar reveals upcoming reality-show lineup', source: 'Streaming News', time: '1 hr ago', tag: 'New' },
+type Tab = 'Overview'|'News radar'|'Create'|'Content studio'|'Calendar'|'Analytics'|'AI Writer'|'AI Voice'|'AI Video'|'Settings';
+const tabs: {label:Tab; icon:any}[] = [
+  ['Overview',LayoutDashboard],['News radar',Search],['Create',WandSparkles],['Content studio',ImageIcon],['Calendar',CalendarDays],['Analytics',BarChart3],
+  ['AI Writer',FileText],['AI Voice',Bot],['AI Video',Video],['Settings',Settings]
 ];
-
-const nav = [
-  ['Overview', LayoutDashboard], ['News radar', Search], ['Create', WandSparkles], ['Content studio', Image], ['Calendar', CalendarDays], ['Analytics', BarChart3],
-];
-
-export default function Home() {
-  const [active, setActive] = useState('Overview');
-  const [connected, setConnected] = useState(false);
-  const [running, setRunning] = useState(true);
-
-  return (
-    <div className="app">
-      <aside className="sidebar">
-        <div className="brand"><div className="brandmark">M</div><div><strong>MasterYAI</strong><span> content OS</span></div></div>
-        <nav className="nav">
-          <div className="navlabel">Workspace</div>
-          {nav.map(([label, Icon]) => <button key={label as string} onClick={() => setActive(label as string)} className={`navitem ${active === label ? 'active' : ''}`}><Icon size={16}/><span>{label as string}</span></button>)}
-          <div className="navlabel">Tools</div>
-          <button className="navitem"><FileText size={16}/><span>AI Writer</span></button>
-          <button className="navitem"><Bot size={16}/><span>AI Voice</span></button>
-          <button className="navitem"><Video size={16}/><span>AI Video</span></button>
-          <button className="navitem"><Settings size={16}/><span>Settings</span></button>
-        </nav>
-        <div className="sidebarBottom"><div className="agentCard"><div className="agentTop"><span>AI Agent</span><span className="dot"/></div><div className="agentMeta">{running ? 'Scanning for new stories' : 'Automation paused'}</div></div></div>
-      </aside>
-
-      <main className="main">
-        <header className="topbar"><div className="crumb">Workspace / <strong>{active}</strong></div><div className="topActions"><button className="iconBtn" aria-label="Search"><Search size={16}/></button><button className="iconBtn" aria-label="Notifications"><Bell size={16}/></button><div className="avatar">SS</div></div></header>
-        <section className="content">
-          <div className="hero"><div><div className="eyebrow">AI content command center</div><h1>Good evening. Let AI run your content.</h1><p>Discover fresh stories, turn them into polished social posts, and publish them on schedule — from one calm workspace.</p></div><button className="primary" onClick={() => setRunning(!running)}>{running ? 'Pause automation' : 'Start automation'}</button></div>
-
-          <div className="stats">
-            <div className="stat"><div className="statLabel">Stories found</div><div className="statValue">24</div><div className="statFoot green">+18% this week</div></div>
-            <div className="stat"><div className="statLabel">Posts created</div><div className="statValue">18</div><div className="statFoot">6 waiting for review</div></div>
-            <div className="stat"><div className="statLabel">Published</div><div className="statValue">12</div><div className="statFoot green">98.4% success rate</div></div>
-            <div className="stat"><div className="statLabel">Next post</div><div className="statValue">7:00</div><div className="statFoot">Today · Instagram</div></div>
-          </div>
-
-          <div className="grid">
-            <div>
-              <div className="card"><div className="cardHead"><div><div className="cardTitle">News radar</div><div className="sub">Fresh stories your agent discovered</div></div><span className="pill">LIVE</span></div><div className="newsList">{news.map((item, i) => <div className="news" key={item.title}><div className="thumb">{i === 0 ? 'BB' : i === 1 ? 'OTT' : i === 2 ? 'TV' : 'JH'}</div><div className="newsBody"><div className="newsTitle">{item.title}</div><div className="newsMeta">{item.source} · {item.time} · <strong>{item.tag}</strong></div></div><button className="action">Create <ChevronRight size={12} style={{verticalAlign:'middle'}}/></button></div>)}</div></div>
-              <div className="automation"><div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}><div><h3>AI newsroom is {running ? 'active' : 'paused'}</h3><p>Scanning approved sources and preparing the next post.</p></div><Bot size={23}/></div><div className="progress"><span/></div><div className="automationFoot"><span>Pipeline health · 72%</span><span>Next scan in 11 min</span></div></div>
-            </div>
-
-            <div>
-              <div className="card"><div className="cardHead"><div><div className="cardTitle">Connected channels</div><div className="sub">Where your AI can publish</div></div><button className="iconBtn" onClick={() => setConnected(!connected)} aria-label="Connect"><Plus size={15}/></button></div>
-                <div className="platform"><div className="platformIcon"><Instagram size={17}/></div><div><div className="platformName">Instagram</div><div className="platformStatus">@masteryai.demo</div></div><div className="platformRight">Connected</div></div>
-                <div className="platform"><div className="platformIcon"><Youtube size={17}/></div><div><div className="platformName">YouTube</div><div className="platformStatus">Channel not connected</div></div><button className="action" onClick={() => setConnected(true)}>{connected ? 'Connected' : 'Connect'}</button></div>
-                <div className="platform"><div className="platformIcon"><Sparkles size={16}/></div><div><div className="platformName">AI profile</div><div className="platformStatus">Entertainment · Hindi + Hinglish</div></div><div className="platformRight">Ready</div></div>
-              </div>
-              <div className="card" style={{marginTop:14}}><div className="cardHead"><div><div className="cardTitle">Today&apos;s schedule</div><div className="sub">Your publishing queue</div></div><CalendarDays size={16}/></div><div className="platform"><div className="platformIcon">01</div><div><div className="platformName">Entertainment poster</div><div className="platformStatus">Instagram · 7:00 PM</div></div><span className="pill">Ready</span></div><div className="platform"><div className="platformIcon">02</div><div><div className="platformName">OTT daily roundup</div><div className="platformStatus">Instagram · 10:00 PM</div></div><span className="pill">Draft</span></div></div>
-            </div>
-          </div>
-          <div className="footerNote"><CircleHelp size={12} style={{verticalAlign:'-2px',marginRight:5}}/> MasterYAI is designed around official platform connections. API keys stay server-side.</div>
-        </section>
-      </main>
-    </div>
-  );
+const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
+async function api(path:string, options?:RequestInit){
+  const r=await fetch(`${apiBase}${path}`,{...options,headers:{'Content-Type':'application/json',...(options?.headers||{})}});
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(data.error||`Request failed (${r.status})`);
+  return data;
 }
+
+export default function Home(){
+  const [active,setActive]=useState<Tab>('Overview');
+  const [running,setRunning]=useState(false);
+  const [busy,setBusy]=useState(false);
+  const [notice,setNotice]=useState('');
+  const [news,setNews]=useState<any[]>([]);
+  const [topic,setTopic]=useState('Bigg Boss and Indian OTT entertainment news');
+  const [draft,setDraft]=useState<any>(null);
+  const [script,setScript]=useState('');
+  const [voiceText,setVoiceText]=useState('');
+  const [imagePrompt,setImagePrompt]=useState('Premium Indian entertainment news poster, 4:5, clean editorial design');
+  const [image,setImage]=useState('');
+  const [health,setHealth]=useState<any>(null);
+
+  useEffect(()=>{api('/api/health').then(setHealth).catch(()=>setHealth({ok:false}));},[]);
+  const action=async(fn:()=>Promise<any>,success:string)=>{setBusy(true);setNotice('');try{const x=await fn();setNotice(success);return x}catch(e:any){setNotice(e.message)}finally{setBusy(false)}};
+  const scan=async()=>{const x=await action(()=>api('/api/news/scan',{method:'POST',body:JSON.stringify({topic})}),'News scan complete'); if(x?.items)setNews(x.items)};
+  const generate=async()=>{const x=await action(()=>api('/api/ai/content',{method:'POST',body:JSON.stringify({topic, language:'Hindi + Hinglish', platform:'Instagram'})}),'AI content package created'); if(x?.content){setDraft(x.content);setScript(x.content.script||'');setVoiceText(x.content.script||'');setImagePrompt(x.content.imagePrompt||imagePrompt)}};
+  const generateVoice=async()=>{const x=await action(()=>api('/api/ai/voice',{method:'POST',body:JSON.stringify({text:voiceText})}),'Voice generated'); if(x?.audioUrl)setNotice(`Voice ready: ${x.audioUrl}`)};
+  const generateImage=async()=>{const x=await action(()=>api('/api/ai/image',{method:'POST',body:JSON.stringify({prompt:imagePrompt})}),'Image generated'); if(x?.imageData)setImage(`data:${x.mimeType||'image/png'};base64,${x.imageData}`)};
+  const publish=async()=>{await action(()=>api('/api/publish/instagram',{method:'POST',body:JSON.stringify({caption:draft?.caption||'MasterYAI test post',imageUrl:image||undefined})}),'Publish request completed')};
+
+  return <div className="app">
+    <aside className="sidebar"><div className="brand"><div className="brandmark">M</div><div><strong>MasterYAI</strong><span> content OS</span></div></div><nav className="nav"><div className="navlabel">Workspace</div>{tabs.map(([label,Icon])=><button key={label} onClick={()=>setActive(label)} className={`navitem ${active===label?'active':''}`}><Icon size={16}/><span>{label}</span></button>)}</nav><div className="sidebarBottom"><div className="agentCard"><div className="agentTop"><span>AI Agent</span><span className={`dot ${running?'live':''}`}/></div><div className="agentMeta">{running?'AI agent is running':'AI agent is paused'}</div></div></div></aside>
+    <main className="main"><header className="topbar"><div className="crumb">Workspace / <strong>{active}</strong></div><div className="topActions"><button className="iconBtn" onClick={()=>setActive('News radar')} aria-label="Search"><Search size={16}/></button><button className="iconBtn" onClick={()=>setNotice('No new notifications')} aria-label="Notifications"><Bell size={16}/></button><div className="avatar">SS</div></div></header>
+      <section className="content"><div className="hero"><div><div className="eyebrow">AI content command center</div><h1>Let AI run your content.</h1><p>Find fresh stories, turn them into original social content, and publish through official platform connections.</p></div><button className="primary" onClick={()=>setRunning(v=>!v)}>{running?<Pause size={15}/>:<Play size={15}/>} {running?'Pause automation':'Start automation'}</button></div>
+      {notice&&<div className="notice"><CheckCircle2 size={15}/><span>{notice}</span><button onClick={()=>setNotice('')}><X size={14}/></button></div>}
+      {active==='Overview'&&<Overview health={health} running={running} scan={scan} generate={generate} news={news} setActive={setActive} publish={publish}/>} 
+      {active==='News radar'&&<NewsRadar topic={topic} setTopic={setTopic} scan={scan} news={news} generate={generate} busy={busy}/>} 
+      {active==='Create'&&<Create draft={draft} topic={topic} setTopic={setTopic} generate={generate} busy={busy}/>} 
+      {active==='Content studio'&&<Studio draft={draft} imagePrompt={imagePrompt} setImagePrompt={setImagePrompt} image={image} generateImage={generateImage} publish={publish} busy={busy}/>} 
+      {active==='Calendar'&&<Calendar/>}{active==='Analytics'&&<Analytics/>}{active==='AI Writer'&&<Writer script={script} setScript={setScript} generate={generate} busy={busy}/>} {active==='AI Voice'&&<Voice text={voiceText} setText={setVoiceText} generateVoice={generateVoice} busy={busy}/>} {active==='AI Video'&&<VideoTool/>}{active==='Settings'&&<SettingsPanel health={health}/>} 
+      <div className="footerNote"><CircleHelp size={12}/> Backend status: {health?.ok?'online':'not connected'} · API keys stay server-side.</div></section></main></div>
+}
+
+function Overview({health,running,scan,generate,news,setActive,publish}:any){return <><div className="stats"><Stat title="Stories found" value={news.length||0} foot="Live from news scanner"/><Stat title="Posts created" value={draftless()} foot="Current session"/><Stat title="Published" value="—" foot="Official API only"/><Stat title="Backend" value={health?.ok?'Online':'Offline'} foot="Server health"/></div><div className="grid"><div><div className="card"><div className="cardHead"><div><div className="cardTitle">News radar</div><div className="sub">Fresh stories your agent can process</div></div><button className="action" onClick={scan}><RefreshCw size={13}/> Scan</button></div>{news.length?<div className="newsList">{news.slice(0,6).map((n:any)=><div className="news" key={n.id||n.link}><div className="thumb">NEWS</div><div className="newsBody"><div className="newsTitle">{n.title}</div><div className="newsMeta">{n.source||'Source'} · {n.published||'recent'}</div></div><button className="action" onClick={generate}>Create <ChevronRight size={12}/></button></div>)}</div>:<Empty text="No scan results yet. Run a news scan."/>}</div><div className="automation"><h3>AI newsroom is {running?'active':'paused'}</h3><p>Start/stop controls the current workspace agent state. Persistent schedules run from the deployed server.</p></div></div><div><div className="card"><div className="cardHead"><div><div className="cardTitle">Connected channels</div><div className="sub">Official OAuth connections</div></div></div><Channel icon={<Instagram size={17}/>} name="Instagram" href="/api/auth/instagram"/><Channel icon={<Youtube size={17}/>} name="YouTube" href="/api/auth/youtube"/></div><div className="card" style={{marginTop:14}}><div className="cardTitle">Quick actions</div><div className="quick"><button className="primary" onClick={()=>setActive('Create')}><WandSparkles size={15}/> Create content</button><button className="secondary" onClick={()=>setActive('Settings')}><Settings size={15}/> API setup</button><button className="secondary" onClick={publish}><Send size={15}/> Publish draft</button></div></div></div></div></>}
+function draftless(){return '0'}
+function Stat({title,value,foot}:any){return <div className="stat"><div className="statLabel">{title}</div><div className="statValue">{value}</div><div className="statFoot">{foot}</div></div>}
+function Channel({icon,name,href}:any){return <div className="platform"><div className="platformIcon">{icon}</div><div><div className="platformName">{name}</div><div className="platformStatus">Connect via OAuth</div></div><a className="action" href={href}>Connect <ExternalLink size={12}/></a></div>}
+function NewsRadar({topic,setTopic,scan,news,generate,busy}:any){return <div className="card"><div className="cardTitle">News radar</div><div className="sub">Search a niche and scan RSS sources for fresh stories.</div><div className="form"><label>Topics / niche<input value={topic} onChange={e=>setTopic(e.target.value)}/></label><button className="primary" onClick={scan} disabled={busy}><RefreshCw size={15}/> {busy?'Scanning…':'Scan new stories'}</button></div>{news.length?<div className="newsList">{news.map((n:any)=><div className="news" key={n.id||n.link}><div className="newsBody"><div className="newsTitle">{n.title}</div><div className="newsMeta">{n.source||'RSS'} · {n.published||''}</div></div><button className="action" onClick={generate}>Create post</button></div>)}</div>:<Empty text="Nothing scanned yet."/>}</div>}
+function Create({draft,topic,setTopic,generate,busy}:any){return <div className="card"><div className="cardTitle">Create a complete post</div><div className="sub">Generate the script, headline, caption, hashtags and image prompt in one request.</div><div className="form"><label>Topic<input value={topic} onChange={e=>setTopic(e.target.value)}/></label><button className="primary" onClick={generate} disabled={busy}><Sparkles size={15}/> {busy?'Generating…':'Generate with AI'}</button></div>{draft&&<pre className="output">{JSON.stringify(draft,null,2)}</pre>}</div>}
+function Studio({draft,imagePrompt,setImagePrompt,image,generateImage,publish,busy}:any){return <div className="studio"><div className="card"><div className="cardTitle">Content studio</div><div className="sub">Generate and review the visual before publishing.</div><label>Image prompt<textarea value={imagePrompt} onChange={e=>setImagePrompt(e.target.value)}/></label><button className="primary" onClick={generateImage} disabled={busy}><ImageIcon size={15}/> {busy?'Generating…':'Generate poster'}</button>{image&&<img className="preview" src={image} alt="Generated poster"/>}</div><div className="card"><div className="cardTitle">Caption</div><div className="output">{draft?.caption||'Generate content first.'}</div><button className="primary" onClick={publish}><Send size={15}/> Publish to Instagram</button></div></div>}
+function Calendar(){return <div className="card"><div className="cardTitle">Calendar</div><div className="sub">Schedule records are the next persistence layer. The UI is live and ready for the database/cron worker.</div><div className="calendarGrid">{['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=><div key={d} className="day"><strong>{d}</strong><span>No scheduled posts</span></div>)}</div></div>}
+function Analytics(){return <div className="stats"><Stat title="Reach" value="—" foot="Connect Instagram insights"/><Stat title="Engagement" value="—" foot="Connect platform"/><Stat title="Posts" value="—" foot="Stored after persistence layer"/><Stat title="Top topic" value="—" foot="Needs analytics data"/></div>}
+function Writer({script,setScript,generate,busy}:any){return <div className="card"><div className="cardTitle">AI Writer</div><textarea className="editor" value={script} onChange={e=>setScript(e.target.value)} placeholder="Generate or write a script…"/><button className="primary" onClick={generate} disabled={busy}><Sparkles size={15}/> Generate script</button></div>}
+function Voice({text,setText,generateVoice,busy}:any){return <div className="card"><div className="cardTitle">AI Voice</div><textarea className="editor" value={text} onChange={e=>setText(e.target.value)} placeholder="Enter narration text…"/><button className="primary" onClick={generateVoice} disabled={busy}><Bot size={15}/> Generate voice</button></div>}
+function VideoTool(){return <div className="card"><div className="cardTitle">AI Video</div><div className="sub">Video rendering requires a worker/storage provider; no fake export button is exposed.</div><Empty text="Add a render/storage worker before enabling video exports."/></div>}
+function SettingsPanel({health}:any){const keys=['ANTHROPIC_API_KEY','GEMINI_API_KEY','ELEVENLABS_API_KEY','INSTAGRAM_APP_ID','INSTAGRAM_APP_SECRET','YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET'];return <div className="card"><div className="cardTitle">Server configuration</div><div className="sub">Secrets belong in Vercel/your server environment, never in GitHub source.</div><div className="settingsList">{keys.map(k=><div className="settingRow" key={k}><span>{k}</span><span className="pill">{health?.env?.includes?.(k)?'Configured':'Not configured'}</span></div>)}</div><div className="hint">After adding variables, redeploy the server. Never use NEXT_PUBLIC_ for secrets.</div></div>}
+function Empty({text}:any){return <div className="empty">{text}</div>}
